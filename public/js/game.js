@@ -507,8 +507,7 @@ function die() {
 }
 
 function goHome() {
-  gameOver = false;
-  started = false;
+  reset();
   msg.classList.remove('gameover');
   msg.style.display = 'none';
   walletScreen.style.display = 'flex';
