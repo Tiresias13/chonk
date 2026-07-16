@@ -45,6 +45,7 @@
       <button class="wsBtn secondary" id="startBtn">Start Game</button>
       <div class="actionRowInline">
         <button class="wsBtn" id="viewLeaderboardBtn" style="background:linear-gradient(180deg,#ffcf6a,#e08a2e);">🏆 Leaderboard</button>
+        <button class="wsBtn" id="viewLoreBtn" style="background:linear-gradient(180deg,#c39bff,#7a4ae0);">📜 Lore</button>
         <button class="wsBtn walletBtn" id="connectWalletBtn" disabled>Connect Wallet<span class="soonTag">SOON</span></button>
       </div>
     </div>
@@ -58,11 +59,20 @@
       <button class="wsBtn secondary" id="lbCloseBtn">Back</button>
     </div>
   </div>
+
+  <div id="loreModal">
+    <div id="lorePanel">
+      <h2>Lore Chonk</h2>
+      <div id="loreText"></div>
+      <button class="wsBtn secondary" id="loreCloseBtn">Back</button>
+    </div>
+  </div>
 </div>
 
 <script src="js/audio.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/leaderboard.js"></script>
+<script src="js/lore.js"></script>
 <script src="js/streak.js"></script>
 <script src="js/game.js"></script>
 </body>
