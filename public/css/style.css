@@ -1,0 +1,208 @@
+* { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: radial-gradient(circle at 50% 30%, #2a1d10 0%, #120b06 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Segoe UI', 'Trebuchet MS', sans-serif;
+    overflow: hidden;
+  }
+  #wrap { position: relative; }
+  canvas { display: block; border: 5px solid #4a3520; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 0 0 2px #7a5a30; image-rendering: pixelated; }
+
+  #hud {
+    position: absolute; top: 14px; left: 14px; right: 14px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    pointer-events: none;
+  }
+  #scoreBox {
+    background: rgba(20,12,6,0.55); border: 2px solid #ffcf6a; border-radius: 10px;
+    padding: 4px 14px; color: #ffe9b0; font-size: 26px; font-weight: 800;
+    text-shadow: 2px 2px 0 #000; min-width: 46px; text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  #best {
+    background: rgba(20,12,6,0.55); border: 2px solid #ffcf6a; border-radius: 10px;
+    padding: 4px 12px; color: #ffcf6a; font-size: 13px; font-weight: 700;
+    text-shadow: 1px 1px 0 #000;
+  }
+  #powerBar {
+    position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 8px; background: rgba(0,0,0,0.4); border-radius: 6px;
+    overflow: hidden; display: none; border: 1px solid rgba(255,255,255,0.3);
+  }
+  #powerFill {
+    height: 100%; width: 100%; background: linear-gradient(90deg,#ffe066,#ff9800);
+    transition: width 0.05s linear;
+  }
+
+  #warnBanner {
+    position: absolute; top: 18%; left: 0; right: 0; text-align: center;
+    pointer-events: none; opacity: 0; transition: opacity 0.25s ease;
+  }
+  #warnBanner.show { opacity: 1; }
+  #warnBanner .title {
+    display: inline-block; color: #ff5a3c; font-size: 15px; font-weight: 900;
+    text-shadow: 2px 2px 0 #000; letter-spacing: 1px; text-transform: uppercase;
+    background: rgba(20,10,5,0.55); padding: 5px 14px; border-radius: 10px;
+    border: 2px solid #ff5a3c; animation: pulseWarn 0.5s ease-in-out infinite;
+  }
+  @keyframes pulseWarn { 0%,100% { transform: scale(1);} 50% { transform: scale(1.08);} }
+
+  #msg {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; text-align: center; pointer-events: none;
+    background: rgba(10,6,3,0.35);
+  }
+  #msg .big { font-size: 22px; font-weight: 800; text-shadow: 2px 2px 0 #000; margin-bottom: 6px; }
+  #msg .small { font-size: 14px; opacity: 0.9; text-shadow: 1px 1px 0 #000; }
+  #msg .tapicon { font-size: 40px; margin-bottom: 10px; animation: bob 1s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-8px);} }
+
+  /* --- Top-right HUD: wallet + score --- */
+  #hud { flex-direction: row-reverse; }
+  #hudRight { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  /* --- Wallet connect landing screen --- */
+  #walletScreen {
+    position: absolute; inset: 0; z-index: 50;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 50% 30%, #2a1d10 0%, #0c0704 100%);
+    color: #fff; text-align: center; padding: 24px;
+  }
+  #walletScreen .logo { width: 96px; height: 96px; image-rendering: pixelated; margin-bottom: 6px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+  #walletScreen h1 {
+    font-size: 24px; margin: 4px 0 2px; color: #ffe9b0; text-shadow: 2px 2px 0 #000;
+    letter-spacing: 0.5px;
+  }
+  #walletScreen .ticker { color: #ffcf6a; font-size: 13px; font-weight: 700; margin-bottom: 14px; text-shadow: 1px 1px 0 #000; }
+  #walletScreen .tagline {
+    color: #d9b877; font-size: 13px; font-style: italic; margin-bottom: 26px;
+    text-shadow: 1px 1px 0 #000; opacity: 0.9;
+  }
+  .wsBtn {
+    background: linear-gradient(180deg,#ffcf6a,#e08a2e); border: 2px solid #7a4a10; border-radius: 12px;
+    padding: 12px 32px; color: #2a1505; font-size: 15px; font-weight: 900; letter-spacing: 0.5px;
+    text-shadow: none; box-shadow: 0 4px 0 #7a4a10, 0 6px 14px rgba(0,0,0,0.4);
+    cursor: pointer; margin-top: 8px; transition: transform 0.08s ease;
+  }
+  .wsBtn:active { transform: translateY(3px); box-shadow: 0 1px 0 #7a4a10; }
+  .wsBtn.secondary { background: linear-gradient(180deg,#4ade80,#1a9c4e); border-color: #0a4a24; }
+  .wsBtn:disabled { opacity: 0.5; cursor: default; }
+
+  #usernameInput {
+    width: 220px; padding: 10px 14px; border-radius: 10px; border: 2px solid #8a6a3a;
+    background: rgba(0,0,0,0.35); color: #ffe9b0; font-size: 14px; text-align: center;
+    outline: none; margin-bottom: 4px;
+  }
+  #usernameInput::placeholder { color: #a98a5a; }
+
+  #leaderboardBox {
+    width: 260px; max-height: 150px; overflow-y: auto; margin-top: 18px;
+    background: rgba(0,0,0,0.35); border: 2px solid #6a4a2a; border-radius: 12px;
+    padding: 8px 12px;
+  }
+  #leaderboardBox h2 {
+    font-size: 12px; color: #ffcf6a; text-transform: uppercase; letter-spacing: 1px;
+    margin: 0 0 6px; text-shadow: 1px 1px 0 #000;
+  }
+  #leaderboardList { list-style: none; margin: 0; padding: 0; text-align: left; }
+  #leaderboardList li {
+    display: flex; justify-content: space-between; font-size: 12px; color: #f0d9a8;
+    padding: 3px 2px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  #leaderboardList li:last-child { border-bottom: none; }
+  #leaderboardList .rank { color: #ffcf6a; font-weight: 700; margin-right: 6px; }
+  #leaderboardList .empty { text-align: center; opacity: 0.6; font-style: italic; }
+
+  /* --- Animations --- */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+  #walletScreen.animateIn { animation: fadeIn 0.4s ease; }
+  #walletScreen .logo { animation: popIn 0.5s ease; }
+  #walletScreen h1, #walletScreen .ticker, #walletScreen .tagline { animation: slideUp 0.5s ease both; }
+  #walletScreen .ticker { animation-delay: 0.05s; }
+  #walletScreen .tagline { animation-delay: 0.1s; }
+  #walletScreen .formRow { display: flex; flex-direction: column; align-items: center; animation: slideUp 0.5s ease both; animation-delay: 0.15s; }
+  #walletScreen .actionRow { animation: slideUp 0.5s ease both; animation-delay: 0.2s; }
+
+  /* --- Country select --- */
+  #countrySelect {
+    width: 220px; padding: 10px 14px; border-radius: 10px; border: 2px solid #8a6a3a;
+    background: rgba(0,0,0,0.35); color: #ffe9b0; font-size: 14px; text-align: center;
+    outline: none; margin-bottom: 10px; appearance: none; cursor: pointer;
+  }
+  #countrySelect option { background: #2a1d10; color: #ffe9b0; }
+
+  /* --- Connect Wallet button (disabled/soon) --- */
+  .wsBtn.walletBtn {
+    position: relative; background: linear-gradient(180deg,#7a8aa0,#4a5568); border-color: #2a3440;
+    color: #cfd8e3; cursor: not-allowed; filter: blur(0.3px); opacity: 0.65;
+  }
+  .wsBtn.walletBtn .soonTag {
+    position: absolute; top: -10px; right: -10px; background: #ff5a3c; color: #fff;
+    font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4); animation: pulseWarn 1.4s ease-in-out infinite;
+    letter-spacing: 0.5px;
+  }
+
+  .actionRow { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .actionRowInline { display: flex; gap: 10px; align-items: center; justify-content: center; }
+
+  /* --- Leaderboard modal --- */
+  #lbModal {
+    position: absolute; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(6,4,2,0.75); backdrop-filter: blur(2px);
+    animation: fadeIn 0.25s ease;
+  }
+  #lbModal.show { display: flex; }
+  #lbPanel {
+    width: 300px; max-height: 480px; display: flex; flex-direction: column;
+    background: radial-gradient(circle at 50% 0%, #2a1d10 0%, #150d06 100%);
+    border: 2px solid #7a5a30; border-radius: 16px; padding: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    animation: slideUp 0.3s ease;
+  }
+  #lbPanel h2 {
+    margin: 0 0 10px; text-align: center; color: #ffcf6a; font-size: 15px;
+    text-shadow: 1px 1px 0 #000; letter-spacing: 0.5px;
+  }
+  #lbFullList {
+    list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1;
+    max-height: 320px; border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  #lbFullList li {
+    display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #f0d9a8;
+    padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    animation: popIn 0.25s ease both;
+  }
+  #lbFullList li .rank { color: #ffcf6a; font-weight: 800; width: 28px; flex-shrink: 0; }
+  #lbFullList li .flag { width: 18px; text-align: center; flex-shrink: 0; }
+  #lbFullList li .uname { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #lbFullList li .uscore { font-weight: 700; color: #ffe9b0; }
+  #lbFullList li.top1 .rank { color: #ffd700; }
+  #lbFullList li.top2 .rank { color: #c0c0c0; }
+  #lbFullList li.top3 .rank { color: #cd7f32; }
+  #lbFullList .empty { text-align: center; opacity: 0.6; font-style: italic; justify-content: center; }
+
+  #lbYouRow {
+    margin-top: 10px; padding: 8px 6px; border-radius: 10px;
+    background: rgba(255,207,106,0.12); border: 1px solid #ffcf6a;
+    display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #ffe9b0;
+    animation: popIn 0.3s ease;
+  }
+  #lbYouRow .rank { color: #ffcf6a; font-weight: 800; width: 28px; flex-shrink: 0; }
+  #lbYouRow .flag { width: 18px; text-align: center; flex-shrink: 0; }
+  #lbYouRow .uname { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+
+  #lbCloseBtn {
+    margin-top: 12px; align-self: center;
+  }
+
+  /* --- Back button in-game (game over) --- */
+  #backHomeBtn {
+    pointer-events: auto; margin-top: 14px; animation: popIn 0.3s ease 0.15s both;
+  }
+  #msg.gameover .big, #msg.gameover .small { animation: slideUp 0.35s ease both; }
